@@ -1,0 +1,75 @@
+
+// Async Await --> JS or TS funcionan de manera Async, esto quiere decir que las funciones 
+    se ejecutan de manera continua o corridas osea que si alguna condicion dentro de la funcion
+    tarda algun milisegundo mas de lo que debe para conseguir sus datos el algoritmo no espera 
+    que este bloque de codigo consiga esos datos, 
+
+    para poder hacer una funcion sync en JS y que espera conseguir algun datos antes de continuar
+    ejecutando el algoritmo usamos el metodo Async Await
+
+
+
+    
+
+// Subir achivos de imagen/avatar de usuario
+// function uploadImage(req: any, res: any) {
+//   // Capturar el id que viene por la url, del usuario que esta haciendo la petición
+//   var userId = req.params.id;
+
+//   if (req.files) {
+//     var filePath = req.files.image.path;
+
+//     var fileSplit = filePath.split('/');
+
+//     var fileName = fileSplit[2];
+
+//     var extSplit = fileName.split('.');
+
+//     var fileExt = extSplit[1];
+
+//     // Validar que el id del usuario que viene en la petición sea el mismo del usuario que hace la petición
+//     if (userId != req.user.sub) {
+//       return removeFilesOFUploads(
+//         res,
+//         filePath,
+//         'No tiene permiso para actualizar los datos del usuario'
+//       );
+//     }
+
+//     if (
+//       fileExt == 'png' ||
+//       fileExt == 'jpg' ||
+//       fileExt == 'jpeg' ||
+//       fileExt == 'gif'
+//     ) {
+//       // Actualizar documentos de usuarios logueado
+//       User.findByIdAndUpdate(
+//         userId,
+//         { image: fileName },
+//         { new: true },
+//         (err: any, userUpdated: any) => {
+//           if (err)
+//             return res.status(500).send({ message: 'Error en la petición' });
+
+//           if (!userUpdated)
+//             return res
+//               .status(404)
+//               .send({ message: 'No se ha podido actualizar el usuario' });
+
+//           return res.status(200).send({ user: userUpdated });
+//           console.log(userUpdated);
+//         }
+//       );
+//     } else {
+//       return removeFilesOFUploads(res, filePath, 'Extensión no valida');
+//     }
+//   } else {
+//     return res.status(200).send({ message: 'No se han subido la imagen' });
+//   }
+// }
+
+// function removeFilesOFUploads(res: any, filePath: any, message: string) {
+//   fs.unlink(filePath, (err: any) => {
+//     return res.status(200).send({ message: message });
+//   });
+// }

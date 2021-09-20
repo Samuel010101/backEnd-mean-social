@@ -4,7 +4,7 @@
   "description": "backend para la red social con el mean stack",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc && node dist/index.js",
+    "start": "nodemon dist/index.js",
     "dev": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,12 +17,15 @@
     "express": "^4.17.1",
     "jwt-simple": "^0.5.6",
     "moment": "^2.29.1",
-    "mongoose": "^5.13.7"
+    "mongoose": "^5.13.7",
+    "mongoose-pagination": "^1.0.0",
+    "multer": "^1.4.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "nodemon": "^2.0.12",
     "tslint": "^6.1.3",
     "typescript": "^4.3.5"
-  }
+  },
+  "keywords": []
 }
