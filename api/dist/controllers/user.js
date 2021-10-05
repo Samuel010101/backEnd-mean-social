@@ -1,13 +1,4 @@
 'use strict';
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var bcrypt = require('bcrypt-nodejs');
 var mongoosePagination = require('mongoose-pagination');
 var fs = require('fs');
@@ -118,6 +109,8 @@ function loginUser(req, res) {
     });
 }
 // METODO PARA EXTRAER LOS DATOS DE UN USUARIO
+// ESTE METODO DEBE SER REVISADO PORQUE AL DEVOLVER EL OBJETO DE LA PETICION ESTA DEVOLVIENDO EL
+// OBJETO VALUE VACIO, DONDE DEBE DEVOLVER SI SIGUE Y ES SEGUIDO POR DICHO USUARIO
 function getUser(req, res) {
     var userId = req.params.id;
     User.findById(userId, (err, user) => {
@@ -126,35 +119,46 @@ function getUser(req, res) {
         if (!user)
             return res.status(404).send({ message: 'El usuario no existe' });
         // Estas lineas siguientes de codigo me permite saber si estoy siguiendo a este usuario o no
-        followingthisUser(req.user.sub, userId).then((value) => {
+        return followThisUser(req.user.sub, userId).then((value) => {
             user.password = undefined;
             return res.status(200).send({ user, value });
         });
     });
 }
-function followingthisUser(identity_user_id, user_id) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var following = yield Follow.findOne({
+async function followThisUser(identity_user_id, user_id) {
+    try {
+        var following = await Follow.findOne({
             user: identity_user_id,
             followed: user_id,
-        }).exec((err, follow) => {
-            if (err)
-                return err;
-            return follow;
+        })
+            .exec()
+            .then((following) => {
+            console.log(following);
+            return following;
+        })
+            .catch((err) => {
+            return handleerror(err);
         });
-        var followed = yield Follow.findOne({
+        var followed = await Follow.findOne({
             user: user_id,
             followed: identity_user_id,
-        }).exec((err, follow) => {
-            if (err)
-                return err;
-            return follow;
+        })
+            .exec()
+            .then((followed) => {
+            console.log(followed);
+            return followed;
+        })
+            .catch((err) => {
+            return handleerror(err);
         });
         return {
             following: following,
             followed: followed,
         };
-    });
+    }
+    catch (e) {
+        console.log(e);
+    }
 }
 // METODO PARA DEVOLVER UN LISTADO DE USUARIOS PAGINADOS
 function getUsers(req, res) {
@@ -172,13 +176,73 @@ function getUsers(req, res) {
             return res.status(500).send({ message: 'Error en la petición' });
         if (!users)
             return res.status(404).send({ message: 'No hay usuarios disponibles' });
-        return res.status(200).send({
-            users,
-            total,
-            pages: Math.ceil(total / itemsPerPage),
+        followUserIds(identity_user_id).then((value) => {
+            return res.status(200).send({
+                users,
+                user_following: value.following,
+                user_followed_me: value.followed,
+                total,
+                pages: Math.ceil(total / itemsPerPage),
+            });
         });
     });
 }
+async function followUserIds(user_id) {
+    var following = await Follow.find({ user: user_id })
+        .select({ _id: 0, __v: 0, user: 0 })
+        .exec()
+        .then((following) => {
+        return following;
+    })
+        .catch((err) => {
+        return handleerror(err);
+    });
+    var followed = await Follow.find({ followed: user_id })
+        .select({ _id: 0, __v: 0, followed: 0 })
+        .exec()
+        .then((followed) => {
+        return followed;
+    })
+        .catch((err) => {
+        return handleerror(err);
+    });
+    // Procesar following ids
+    var following_clean = [];
+    following.forEach((follow) => {
+        following_clean.push(follow.followed);
+    });
+    // Procesar followed ids
+    var followed_clean = [];
+    followed.forEach((follow) => {
+        followed_clean.push(follow.user);
+    });
+    return {
+        following: following_clean,
+        followed: followed_clean,
+    };
+}
+// METODO PARA CONTABILIZAR LOS USUARIOS QUE SIGO Y LOS QUE ME SIGUEN
+function getCounters(req, res) {
+    var userId = req.user.sub;
+    if (req.params.id) {
+        userId = req.params.id;
+    }
+    getCountFollow(userId).then((value) => {
+        return res.status(200).send({ value });
+        console.log(value);
+    });
+}
+const getCountFollow = async (user_id) => {
+    try {
+        // Lo hice de dos formas. "following" con callback de countDocuments y "followed" con una promesa
+        var following = await Follow.countDocuments({ user: user_id }).then((count) => count);
+        var followed = await Follow.countDocuments({ followed: user_id }).then((count) => count);
+        return { following, followed };
+    }
+    catch (e) {
+        console.log(e);
+    }
+};
 // METODO PARA ACTUALIZAR LOS DATOS DE UN USUARIO
 function updateUser(req, res) {
     // Capturar el id que viene por la url, del usuario que esta haciendo la petición
@@ -268,7 +332,11 @@ module.exports = {
     loginUser,
     getUser,
     getUsers,
+    getCounters,
     updateUser,
     uploadImage,
     getImageFile,
 };
+function handleerror(err) {
+    throw new Error('Function not implemented.');
+}

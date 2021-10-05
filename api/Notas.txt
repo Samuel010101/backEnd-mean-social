@@ -9,6 +9,60 @@
 
 
 
+
+{
+    "user": {
+        "_id": "61271ce567bae24dcdd577a7",
+        "name": "Ari",
+        "surname": "De Martinez",
+        "nick": "Ari05",
+        "email": "Ari@05.com",
+        "role": "ROLE_USER",
+        "image": null,
+        "__v": 0
+    },
+    "value": {
+        "following": {
+            {
+            "_id" : ObjectId("6142231d7a6db9f1920022b7"),
+            "user" : ObjectId("613f9c00b07eb5d5c48e9d3e"),
+            "followed" : ObjectId("61271ce567bae24dcdd577a7"),
+            "__v" : 0
+            },
+        "followed": null
+        }
+    }
+}
+
+
+{
+    "user": {
+        "_id": "61271ce567bae24dcdd577a7",
+        "name": "Ari",
+        "surname": "De Martinez",
+        "nick": "Ari05",
+        "email": "Ari@05.com",
+        "role": "ROLE_USER",
+        "image": null,
+        "__v": 0
+    },
+    "value": {}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
 // Subir achivos de imagen/avatar de usuario
@@ -73,3 +127,110 @@
 //     return res.status(200).send({ message: message });
 //   });
 // }
+
+
+
+
+
+// METODO PARA EXTRAER LOS DATOS DE UN USUARIO
+// ESTE METODO DEBE SER REVISADO PORQUE AL DEVOLVER EL OBJETO DE LA PETICION ESTA DEVOLVIENDO EL
+// OBJETO VALUE VACIO, DONDE DEBE DEVOLVER SI SIGUE Y ES SEGUIDO POR DICHO USUARIO
+function getUser(req: any, res: any) {
+  var userId = req.params.id;
+
+  User.findById(userId, (err: any, user: any) => {
+    if (err) return res.status(500).send({ message: 'Error en la petición' });
+
+    if (!user) return res.status(404).send({ message: 'El usuario no existe' });
+    // Estas lineas siguientes de codigo me permite saber si estoy siguiendo a este usuario o no
+
+    return followThisUser(req.user.sub, userId).then((value) => {
+      user.password = undefined;
+      return res.status(200).send({ user, value });
+    });
+  });
+}
+
+async function followThisUser(identity_user_id: any, user_id: any) {
+  var following = Follow.findOne({
+    user: identity_user_id,
+    followed: user_id,
+  }).exec((err: string, follow: any) => {
+    if (err) return err;
+    return follow;
+  });
+
+  var followed = Follow.findOne({
+    user: user_id,
+    followed: identity_user_id,
+  }).exec((err: string, follow: any) => {
+    if (err) return err;
+    return follow;
+  });
+
+  return {
+    following,
+    followed,
+  };
+}
+
+// ESTA FUE LA FORMA COMO RESOLVI EL PROBLEMA QUE ME ESTABA DANDO LA IMPLEMENTACION ANTERIOR DE LA FUNCION
+// ASYNCRONA DEL METODO getUser
+async function followThisUser(identity_user_id, user_id){
+    try {
+        var following = await Follow.findOne({ user: identity_user_id, followed: user_id}).exec()
+            .then((following) => {
+                console.log(following);
+                return following;
+            })
+            .catch((err)=>{
+                return handleerror(err);
+            });
+        var followed = await Follow.findOne({ user: user_id, followed: identity_user_id}).exec()
+            .then((followed) => {
+                console.log(followed);
+                return followed;
+            })
+            .catch((err)=>{
+                return handleerror(err);
+            });
+        return {
+            following: following,
+            followed: followed
+        }
+    } catch(e){
+        console.log(e);
+    }
+}
+
+
+
+
+
+
+
+
+// DE ESA FORMA CONTABILIZARLOS LOS USUARIOS QUE ME SIGUEN Y QUE SIGO
+getCounters y getCountFollow
+const getCounters = (req, res) => {
+    let userId = req.user.sub;
+    if(req.params.id){
+        userId = req.params.id;      
+    }
+    getCountFollow(userId).then((value) => {
+        return res.status(200).send(value);
+    })
+}
+ 
+const getCountFollow = async (user_id) => {
+    try{
+        // Lo hice de dos formas. "following" con callback de countDocuments y "followed" con una promesa
+        let following = await Follow.countDocuments({"user": user_id},(err, result) => { return result });
+        let followed = await Follow.countDocuments({"followed": user_id}).then(count => count);
+ 
+        return { following, followed }
+        
+    } catch(e){
+        console.log(e);
+    }
+}
