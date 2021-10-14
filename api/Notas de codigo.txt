@@ -234,3 +234,13 @@ const getCountFollow = async (user_id) => {
         console.log(e);
     }
 }
+
+
+ // Validar que el id del usuario que viene en la petición sea el mismo del usuario que hace la petición
+    // if (userId != req.user.sub) {
+    //   return removeFilesOFUploads(
+    //     res,
+    //     filePath,
+    //     'No tiene permiso para actualizar los datos del usuario'
+    //   );
+    // }

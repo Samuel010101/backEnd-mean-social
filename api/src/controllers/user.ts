@@ -7,6 +7,7 @@ var path = require('path');
 
 var User = require('../models/user');
 var Follow = require('../models/follow');
+var Publication = require('../models/publication');
 var jwt = require('../services/jwt');
 
 function home(req: any, res: any) {
@@ -266,8 +267,11 @@ const getCountFollow = async (user_id: any) => {
     var followed = await Follow.countDocuments({ followed: user_id }).then(
       (count: any) => count
     );
+    var publication = await Publication.countDocuments({ user: user_id }).then(
+      (count: any) => count
+    );
 
-    return { following, followed };
+    return { following, followed, publication };
   } catch (e) {
     console.log(e);
   }
@@ -308,20 +312,15 @@ function updateUser(req: any, res: any) {
 }
 
 // METODO PARA SUBIR ARCHIVOS DE IMAGEN/AVATAR DE UN USUARIO
-// ESTE METODO ESTA PENDIENTE A REVISAR PORQUE NO ESTA FUNCIONANDO CORRECTAMENTE TODAVIA
 function uploadImage(req: any, res: any) {
   // Capturar el id que viene por la url, del usuario que esta haciendo la petición
   var userId = req.params.id;
 
   if (req.files) {
     var filePath = req.files.image.path;
-
     var fileSplit = filePath.split('/');
-
     var fileName = fileSplit[2];
-
     var extSplit = fileName.split('.');
-
     var fileExt = extSplit[1];
 
     // Validar que el id del usuario que viene en la petición sea el mismo del usuario que hace la petición
@@ -361,7 +360,7 @@ function uploadImage(req: any, res: any) {
       return removeFilesOFUploads(res, filePath, 'Extensión no valida');
     }
   } else {
-    return res.status(200).send({ message: 'No se han subido la imagen' });
+    return res.status(200).send({ message: 'No se ha subido la imagen' });
   }
 }
 
@@ -375,7 +374,7 @@ function removeFilesOFUploads(res: any, filePath: any, message: string) {
 // PROBAR ESTE METODO LUEGO DE CORREGIR EL METODO UploadImage
 function getImageFile(req: any, res: any) {
   var imageFile = req.params.imageFile;
-  var pathFile = './uploads' + imageFile;
+  var pathFile = './uploads/users' + imageFile;
 
   fs.exists(pathFile, (exists: any) => {
     if (exists) {

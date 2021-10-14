@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var User = require('../models/user');
 var Follow = require('../models/follow');
+var Publication = require('../models/publication');
 var jwt = require('../services/jwt');
 function home(req, res) {
     res.status(200).send({
@@ -237,7 +238,8 @@ const getCountFollow = async (user_id) => {
         // Lo hice de dos formas. "following" con callback de countDocuments y "followed" con una promesa
         var following = await Follow.countDocuments({ user: user_id }).then((count) => count);
         var followed = await Follow.countDocuments({ followed: user_id }).then((count) => count);
-        return { following, followed };
+        var publication = await Publication.countDocuments({ user: user_id }).then((count) => count);
+        return { following, followed, publication };
     }
     catch (e) {
         console.log(e);
@@ -269,7 +271,6 @@ function updateUser(req, res) {
     });
 }
 // METODO PARA SUBIR ARCHIVOS DE IMAGEN/AVATAR DE UN USUARIO
-// ESTE METODO ESTA PENDIENTE A REVISAR PORQUE NO ESTA FUNCIONANDO CORRECTAMENTE TODAVIA
 function uploadImage(req, res) {
     // Capturar el id que viene por la url, del usuario que esta haciendo la petición
     var userId = req.params.id;
@@ -304,7 +305,7 @@ function uploadImage(req, res) {
         }
     }
     else {
-        return res.status(200).send({ message: 'No se han subido la imagen' });
+        return res.status(200).send({ message: 'No se ha subido la imagen' });
     }
 }
 function removeFilesOFUploads(res, filePath, message) {
@@ -316,7 +317,7 @@ function removeFilesOFUploads(res, filePath, message) {
 // PROBAR ESTE METODO LUEGO DE CORREGIR EL METODO UploadImage
 function getImageFile(req, res) {
     var imageFile = req.params.imageFile;
-    var pathFile = './uploads' + imageFile;
+    var pathFile = './uploads/users' + imageFile;
     fs.exists(pathFile, (exists) => {
         if (exists) {
             res.sendFile(path.resolve(pathFile));

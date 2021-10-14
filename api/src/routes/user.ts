@@ -7,21 +7,21 @@ var multer = require('multer');
 var api = express.Router();
 var md_auth = require('../middlewares/authenticated');
 
-// var multipart = require('connect-multiparty');
-// var md_upload = multipart({ uploadDir: './uploads' });
+var multipart = require('connect-multiparty');
+var md_upload = multipart({ uploadDir: './uploads/users' });
 
-api.use(express.static(__dirname + '/uploads'));
+// api.use(express.static(__dirname + '/uploads/users'));
 
-const storage = multer.diskStorage({
-  destination: function (req: any, file: any, cb: any) {
-    cb(null, './uploads');
-  },
-  filename: function (req: any, file: any, cb: any) {
-    cb(null, 'image' + Date.now() + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req: any, file: any, cb: any) {
+//     cb(null, './uploads/users');
+//   },
+//   filename: function (req: any, file: any, cb: any) {
+//     cb(null, 'image' + Date.now() + file.originalname);
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 api.get('/home', md_auth.ensureAuth, UserController.home);
 api.post('/register', UserController.saveUser);
@@ -33,7 +33,7 @@ api.put('/update-user/:id', md_auth.ensureAuth, UserController.updateUser);
 
 api.post(
   '/upload-image/:id',
-  [md_auth.ensureAuth, upload.single('image')],
+  [md_auth.ensureAuth, md_upload],
   UserController.uploadImage
 );
 api.get(
