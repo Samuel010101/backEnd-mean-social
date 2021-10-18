@@ -1,3 +1,3 @@
 --> Testear el metodo de devolver una imagen 
---> Revisar y arreglar el codigo del metodo de devolver los datos de un usuario
+--> Revisar y arreglar el codigo del metodo de devolver los datos de un usuario (el objeto value de los following y followed estan viniendo null)
 --> Revisar y arreglar el codigo del control de duplicidad de usuario en el metodo de registrar usuario

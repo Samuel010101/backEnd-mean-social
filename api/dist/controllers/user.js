@@ -222,7 +222,7 @@ async function followUserIds(user_id) {
         followed: followed_clean,
     };
 }
-// METODO PARA CONTABILIZAR LOS USUARIOS QUE SIGO Y LOS QUE ME SIGUEN
+// METODO PARA CONTABILIZAR LOS USUARIOS QUE SIGO, LOS QUE ME SIGUEN Y LAS PUBLICACIONES
 function getCounters(req, res) {
     var userId = req.user.sub;
     if (req.params.id) {
