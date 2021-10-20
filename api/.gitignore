@@ -1,0 +1,9 @@
+.env
+
+Notas de codigo.txt
+Notas de temas a trabajar.txt
+
+node_modules
+package-lock.json
+package.json
+
