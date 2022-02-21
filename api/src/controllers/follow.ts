@@ -146,7 +146,7 @@ function getMyFollows(req: any, res: any) {
   });
 }
 
-module.exports = {
+export default {
   saveFollow,
   deleteFollow,
   getFollowingUser,

@@ -1,0 +1,9 @@
+###
+POST http://localhost:3800/api/publication HTTP/1.1
+Content-Type: application/json
+
+{
+    "text": "probando",
+    "file": 0,
+      
+}

@@ -1,10 +1,10 @@
 'use strict';
 
-var jwt = require('jwt-simple');
-var moment = require('moment');
-var secret = 'La_clave_secreta_red_social_mean_stack';
+import jwt from 'jwt-simple';
+import moment from 'moment';
+const secret = 'La_clave_secreta_red_social_mean_stack';
 
-exports.createToken = function (user: any) {
+function createToken(user: any) {
   var payload = {
     sub: user.id,
     name: user.name,
@@ -20,8 +20,9 @@ exports.createToken = function (user: any) {
   };
 
   return jwt.encode(payload, secret);
-};
+}
 
+export default createToken;
 // Este servicio me permite generar y devolver un token basados en un payload que son las propiedades
 // del usuario y una clave secreta utilizando la libreria jwt(json web token) y moment para
 // manejar el tiempo de creación y expiración.

@@ -1,11 +1,11 @@
 'use strict';
 
-var moment = require('moment');
-var mongoosePaginate = require('mongoose-pagination');
+import moment from 'moment';
+import 'mongoose-pagination';
 
-var User = require('../models/user');
-var Follow = require('../models/follow');
-var Message = require('../models/message');
+import User from '../models/user';
+import Follow from '../models/follow';
+import Message from '../models/message';
 
 // METODO PARA GUARDAR NUEVOS MENSAJES
 function saveMessage(req: any, res: any) {
@@ -126,7 +126,7 @@ function setViewedMessages(req: any, res: any) {
   );
 }
 
-module.exports = {
+export default {
   saveMessage,
   getReceiveMessages,
   getEmmittedMessages,

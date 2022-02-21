@@ -3,11 +3,11 @@
 // Este middleware verifica si el token de la cabecera es valido y no ha espirado antes de
 // dar acceso al usuario que hace la petición de login.
 
-var jwt = require('jwt-simple');
-var moment = require('moment');
-var secret = 'La_clave_secreta_red_social_mean_stack';
+import jwt from 'jwt-simple';
+import moment from 'moment';
+const secret = 'La_clave_secreta_red_social_mean_stack';
 
-exports.ensureAuth = function (req: any, res: any, next: any) {
+function ensureAuth(req: any, res: any, next: any) {
   if (!req.headers.authorization) {
     return res
       .status(403)
@@ -29,4 +29,6 @@ exports.ensureAuth = function (req: any, res: any, next: any) {
   req.user = payload;
 
   next();
-};
+}
+
+export default ensureAuth;

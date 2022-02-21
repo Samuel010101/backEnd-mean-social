@@ -35,4 +35,4 @@ api.post(
 );
 api.get('/get-image-pub/:imageFile', PublicationController.getImageFilePub);
 
-module.exports = api;
+export default api;

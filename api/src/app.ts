@@ -1,15 +1,15 @@
 'use strict';
 
-var express = require('express');
-var bodyParser = require('body-parser');
+import express from 'express';
+import bodyParser from 'body-parser';
 
-var app = express();
+const app = express();
 
 // Cargar rutas
-var user_routes = require('./routes/user');
-var follow_routes = require('./routes/follow');
-var publication_routes = require('./routes/publication');
-var message_routes = require('./routes/message');
+import user_routes from './routes/user';
+import follow_routes from './routes/follow';
+import publication_routes from './routes/publication';
+import message_routes from './routes/message';
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,4 +35,4 @@ app.use('/api', publication_routes);
 app.use('/api', message_routes);
 
 // Export
-module.exports = app;
+export default app;

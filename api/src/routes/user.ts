@@ -42,4 +42,4 @@ api.get(
   UserController.getImageFile
 );
 
-module.exports = api;
+export default api;

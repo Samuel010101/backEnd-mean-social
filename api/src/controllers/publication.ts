@@ -1,13 +1,13 @@
 'use strict';
 
-var path = require('path');
-var fs = require('fs');
-var moment = require('moment');
-var mongoosePaginate = require('mongoose-pagination');
+import path from 'path';
+import fs from 'fs';
+import moment from 'moment';
+import 'mongoose-pagination';
 
-var Publication = require('../models/publication');
-var User = require('../models/user');
-var Follow = require('../models/follow');
+import Publication from '../models/publication';
+import User from '../models/user';
+import Follow from '../models/follow';
 
 // METODO PARA GUARDAR UNA PUBLICACION
 function savePublication(req: any, res: any) {
@@ -205,7 +205,7 @@ function getImageFilePub(req: any, res: any) {
   });
 }
 
-module.exports = {
+export default {
   savePublication,
   getPublications,
   getPublication,

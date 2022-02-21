@@ -1,14 +1,14 @@
 'use strict';
 
-var bcrypt = require('bcrypt-nodejs');
-var mongoosePagination = require('mongoose-pagination');
-var fs = require('fs');
-var path = require('path');
+import bcrypt from 'bcrypt-nodejs';
+import 'mongoose-pagination';
+import fs from 'fs';
+import path = require('path');
 
-var User = require('../models/user');
-var Follow = require('../models/follow');
-var Publication = require('../models/publication');
-var jwt = require('../services/jwt');
+import User from '../models/user';
+import Follow from '../models/follow';
+import Publication from '../models/publication';
+import jwt from '../services/jwt';
 
 function home(req: any, res: any) {
   res.status(200).send({
@@ -57,7 +57,7 @@ function saveUser(req: any, res: any) {
           .send({ message: 'El usuario que intenta registrar ya existe' });
       } else {
         // Generar la contraseña cifrada y guardar los datos
-        bcrypt.hash(params.password, null, null, (err: any, hash: any) => {
+        bcrypt.hash(params.password, '', null, (err: any, hash: any) => {
           user.password = hash;
 
           user.save((err: any, userStored: any) => {
@@ -102,7 +102,7 @@ function loginUser(req: any, res: any) {
           if (params.gettoken) {
             // Generar y devolver un token
             return res.status(200).send({
-              token: jwt.createToken(user),
+              token: jwt(user),
             });
           } else {
             // Devolver datos del usuario
@@ -131,7 +131,7 @@ function getUser(req: any, res: any) {
     if (!user) return res.status(404).send({ message: 'El usuario no existe' });
     // Estas lineas siguientes de codigo me permite saber si estoy siguiendo a este usuario o no
 
-    return followThisUser(req.user.sub, userId).then((value) => {
+    followThisUser(req.user.sub, userId).then((value) => {
       user.password = undefined;
       return res.status(200).send({ user, value });
     });
@@ -385,7 +385,7 @@ function getImageFile(req: any, res: any) {
   });
 }
 
-module.exports = {
+export default {
   home,
   saveUser,
   loginUser,
